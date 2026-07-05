@@ -7,16 +7,23 @@ from django.views.generic import (
 )
 
 from .forms import EstudianteForm
+from .mixins import BusquedaMixin, FiltroCursoMixin
 from .models import Estudiante
 
 
-class EstudianteListView(ListView):
-    """Lista paginada de estudiantes (10 por página)."""
+class EstudianteListView(BusquedaMixin, FiltroCursoMixin, ListView):
+    """
+    Lista paginada de estudiantes (10 por página).
+
+    V2: se agregan BusquedaMixin (?q=) y FiltroCursoMixin (?curso_id=)
+    reutilizando mixins genéricos; el cuerpo de la vista no cambia.
+    """
 
     model = Estudiante
     template_name = "estudiantes/estudiante_list.html"
     context_object_name = "estudiantes"
     paginate_by = 10
+    search_fields = ["nombre", "apellido", "email"]
 
 
 class EstudianteCreateView(CreateView):
