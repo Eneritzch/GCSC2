@@ -74,6 +74,7 @@
 
         .main { flex: 1; margin-left: 250px; display: flex; flex-direction: column; min-width: 0; }
         .content { padding: 30px 34px; flex: 1; max-width: 1200px; width: 100%; }
+        .app-foot { padding: 18px 34px; color: var(--muted); font-size: .82rem; border-top: 1px solid var(--border); text-align: center; }
 
         /* Page header */
         .page-head {
@@ -281,6 +282,9 @@
                 {% endif %}
                 {% block content %}{% endblock %}
             </div>
+            <footer class="app-foot">
+                Control de Estudiantes &mdash; Gestión de la Configuración de Software &copy; 2026
+            </footer>
         </div>
     </div>
 </body>
