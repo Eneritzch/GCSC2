@@ -1,0 +1,25 @@
+# Infraestructura como código para desplegar en Render.
+# https://render.com/docs/blueprint-spec
+services:
+  - type: web
+    name: control-estudiantes
+    runtime: python
+    plan: free
+    buildCommand: >-
+      pip install -r requirements.txt &&
+      python manage.py collectstatic --noinput &&
+      python manage.py migrate
+    startCommand: gunicorn config.wsgi --log-file -
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      # Si conectas una base de datos Postgres de Render, Render inyecta
+      # DATABASE_URL automáticamente y settings.py la usará.
+      - key: DATABASE_URL
+        sync: false
