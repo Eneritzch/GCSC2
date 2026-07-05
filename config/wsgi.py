@@ -1,9 +1,4 @@
-"""
-Configuración WSGI para el proyecto control_estudiantes.
-
-Expone el callable WSGI como una variable a nivel de módulo llamada
-``application``. Usado por Gunicorn en producción.
-"""
+"""WSGI del proyecto control_estudiantes (usado por Gunicorn)."""
 
 import os
 

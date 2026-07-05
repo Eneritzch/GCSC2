@@ -3,28 +3,23 @@
 {% block title %}Eliminar estudiante{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card border-danger shadow-sm">
-            <div class="card-body">
-                <h1 class="h4 text-danger mb-3">Confirmar eliminación</h1>
-                <p>
-                    ¿Estás seguro de que deseas eliminar al estudiante
-                    <strong>{{ object }}</strong>? Esta acción no se puede deshacer.
-                </p>
-                <form method="post">
-                    {% csrf_token %}
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-danger">
-                            Sí, eliminar
-                        </button>
-                        <a href="{% url 'estudiantes:lista' %}" class="btn btn-outline-secondary">
-                            Cancelar
-                        </a>
-                    </div>
-                </form>
-            </div>
-        </div>
+<div class="page-head">
+    <div>
+        <h1>Eliminar estudiante</h1>
+        <p>Esta acción no se puede deshacer</p>
     </div>
+</div>
+
+<div class="card2 card2-pad" style="max-width:520px">
+    <p style="margin:0 0 20px">
+        ¿Seguro que deseas eliminar a <strong>{{ object }}</strong>?
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button type="submit" class="btn2 btn2-danger">Sí, eliminar</button>
+            <a href="{% url 'estudiantes:lista' %}" class="btn2 btn2-ghost">Cancelar</a>
+        </div>
+    </form>
 </div>
 {% endblock %}
