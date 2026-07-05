@@ -1,0 +1,42 @@
+name: CI
+
+# Se ejecuta en push y pull request a main y a cualquier rama feature/*
+on:
+  push:
+    branches:
+      - main
+      - "feature/**"
+  pull_request:
+    branches:
+      - main
+      - "feature/**"
+
+jobs:
+  test:
+    name: Lint y Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout del código
+        uses: actions/checkout@v4
+
+      - name: Configurar Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Instalar dependencias
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Lint con flake8
+        run: flake8 .
+
+      - name: Ejecutar tests
+        env:
+          SECRET_KEY: clave-de-prueba-para-ci
+          DEBUG: "False"
+        run: python manage.py test --verbosity 2
