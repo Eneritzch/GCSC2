@@ -1,0 +1,6 @@
+# Dependencias solo de desarrollo / CI
+-r requirements.txt
+
+pytest==8.3.4
+pytest-django==4.9.0
+flake8==7.1.1
