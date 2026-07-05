@@ -144,6 +144,42 @@
         .cell-name { font-weight: 600; }
         .cell-muted { color: var(--muted); }
 
+        /* Stat cards (burbujas) */
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 22px; }
+        .stat {
+            border-radius: var(--radius); padding: 18px 20px; color: #fff;
+            display: flex; align-items: center; gap: 15px;
+            box-shadow: 0 6px 16px rgba(37,99,235,.18);
+        }
+        .stat.b1 { background: #2563eb; }
+        .stat.b2 { background: #0ea5e9; }
+        .stat.b3 { background: #4f46e5; }
+        .stat.b4 { background: #1e293b; }
+        .stat .bubble {
+            width: 46px; height: 46px; border-radius: 50%;
+            background: rgba(255,255,255,.18);
+            display: grid; place-items: center; flex-shrink: 0;
+        }
+        .stat .bubble svg { width: 23px; height: 23px; stroke: #fff; }
+        .stat .num { font-size: 1.7rem; font-weight: 700; line-height: 1; }
+        .stat .lbl { font-size: .82rem; opacity: .85; margin-top: 4px; }
+
+        /* Avatar (burbuja con iniciales) */
+        .avatar {
+            width: 38px; height: 38px; border-radius: 50%;
+            display: inline-grid; place-items: center;
+            color: #fff; font-weight: 600; font-size: .82rem; flex-shrink: 0;
+        }
+        .name-cell { display: flex; align-items: center; gap: 12px; }
+
+        /* Pill de curso */
+        .pill {
+            display: inline-flex; align-items: center;
+            padding: 4px 12px; border-radius: 999px;
+            background: var(--accent-soft); color: var(--accent);
+            font-size: .82rem; font-weight: 500;
+        }
+
         /* Badges */
         .badge2 {
             display: inline-flex; align-items: center; gap: 6px;
@@ -206,6 +242,7 @@
             .nav a span { display: none; }
             .main { margin-left: 0; }
             .content { padding: 20px 16px; }
+            .stats { grid-template-columns: repeat(2, 1fr); }
         }
     </style>
 </head>
