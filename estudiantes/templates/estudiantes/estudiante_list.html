@@ -10,6 +10,41 @@
     </a>
 </div>
 
+{# V2: barra de búsqueda + filtro por curso + exportación #}
+<form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-md-5">
+        <label class="form-label" for="q">Buscar</label>
+        <input type="text" name="q" id="q" value="{{ q }}"
+               class="form-control" placeholder="Nombre, apellido o email...">
+    </div>
+    <div class="col-md-4">
+        <label class="form-label" for="curso_id">Curso</label>
+        <select name="curso_id" id="curso_id" class="form-select">
+            <option value="">Todos los cursos</option>
+            {% for curso in cursos %}
+                <option value="{{ curso.pk }}"
+                    {% if curso.pk|stringformat:"s" == curso_id %}selected{% endif %}>
+                    {{ curso.nombre }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="col-md-3 d-flex gap-2">
+        <button type="submit" class="btn btn-outline-primary">Filtrar</button>
+        <a href="{% url 'estudiantes:lista' %}" class="btn btn-outline-secondary">
+            Limpiar
+        </a>
+    </div>
+</form>
+
+<div class="mb-3 d-flex gap-2">
+    {# Los reportes reutilizan los mismos filtros ?q= y ?curso_id= #}
+    <a href="{% url 'reportes:pdf' %}?q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}"
+       class="btn btn-danger btn-sm">📄 Exportar PDF</a>
+    <a href="{% url 'reportes:excel' %}?q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}"
+       class="btn btn-success btn-sm">📊 Exportar Excel</a>
+</div>
+
 {% include "estudiantes/partials/_tabla_estudiantes.html" with mostrar_acciones=True %}
 
 {% if is_paginated %}
@@ -17,7 +52,8 @@
         <ul class="pagination justify-content-center">
             {% if page_obj.has_previous %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.previous_page_number }}">
+                    <a class="page-link"
+                       href="?page={{ page_obj.previous_page_number }}&q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}">
                         Anterior
                     </a>
                 </li>
@@ -29,7 +65,8 @@
             </li>
             {% if page_obj.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="?page={{ page_obj.next_page_number }}">
+                    <a class="page-link"
+                       href="?page={{ page_obj.next_page_number }}&q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}">
                         Siguiente
                     </a>
                 </li>
