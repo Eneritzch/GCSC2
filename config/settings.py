@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # Apps del proyecto
     "estudiantes",
     "cursos",
+    "reportes",
 ]
 
 MIDDLEWARE = [
