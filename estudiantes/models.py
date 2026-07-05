@@ -3,14 +3,6 @@ from django.urls import reverse
 
 
 class Estudiante(models.Model):
-    """
-    Estudiante registrado en el sistema.
-
-    Este modelo es COMPARTIDO/REUTILIZADO por varias apps:
-    - estudiantes: CRUD principal.
-    - reportes (V2): lo importa para generar PDF/Excel sin duplicar datos.
-    """
-
     nombre = models.CharField("Nombre", max_length=100)
     apellido = models.CharField("Apellido", max_length=100)
     email = models.EmailField("Correo electrónico", unique=True)

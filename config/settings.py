@@ -1,40 +1,22 @@
-"""
-Configuración de Django para el proyecto control_estudiantes.
-
-La configuración lee valores sensibles y dependientes del entorno desde
-variables de entorno (o un archivo .env) usando python-decouple, de modo que
-el mismo código funcione tanto en desarrollo como en producción (Render).
-"""
+"""Configuracion de Django para el proyecto control_estudiantes."""
 
 from pathlib import Path
 
 from decouple import Csv, config
 
-# Directorio raíz del proyecto (donde vive manage.py).
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# --------------------------------------------------------------------------
-# Seguridad / entorno
-# --------------------------------------------------------------------------
-# En desarrollo se usa un valor por defecto; en producción DEBE definirse
-# SECRET_KEY como variable de entorno.
 SECRET_KEY = config(
     "SECRET_KEY",
     default="django-insecure-clave-solo-para-desarrollo-cambiar-en-produccion",
 )
-
 DEBUG = config("DEBUG", default=True, cast=bool)
-
-# Lista separada por comas: "midominio.com,www.midominio.com"
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
     default="localhost,127.0.0.1,.onrender.com",
     cast=Csv(),
 )
 
-# --------------------------------------------------------------------------
-# Aplicaciones
-# --------------------------------------------------------------------------
 INSTALLED_APPS = [
     "django.contrib.admin",
     "django.contrib.auth",
@@ -42,7 +24,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    # Apps del proyecto
     "estudiantes",
     "cursos",
     "reportes",
@@ -50,7 +31,6 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
-    # WhiteNoise sirve archivos estáticos en producción sin un servidor extra.
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -80,11 +60,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "config.wsgi.application"
 
-# --------------------------------------------------------------------------
-# Base de datos
-# --------------------------------------------------------------------------
-# Por defecto SQLite (desarrollo). En producción, si se define DATABASE_URL,
-# se parsea automáticamente (ej. Postgres de Render).
+# SQLite por defecto; si se define DATABASE_URL se usa esa (ej. Postgres).
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
@@ -97,12 +73,9 @@ if DATABASE_URL:
     import dj_database_url
 
     DATABASES["default"] = dj_database_url.parse(
-        DATABASE_URL, conn_max_age=600, ssl_require=True
+        DATABASE_URL, conn_max_age=600, ssl_require=not DEBUG
     )
 
-# --------------------------------------------------------------------------
-# Validación de contraseñas
-# --------------------------------------------------------------------------
 AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation."
@@ -122,21 +95,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-# --------------------------------------------------------------------------
-# Internacionalización
-# --------------------------------------------------------------------------
 LANGUAGE_CODE = "es"
 TIME_ZONE = "America/Guayaquil"
 USE_I18N = True
 USE_TZ = True
 
-# --------------------------------------------------------------------------
-# Archivos estáticos
-# --------------------------------------------------------------------------
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# Almacenamiento comprimido y con versión gestionado por WhiteNoise.
 STORAGES = {
     "default": {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
@@ -147,6 +113,4 @@ STORAGES = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
-
-# URL a la que redirige el CRUD tras crear/editar/borrar.
 LOGIN_URL = "/"

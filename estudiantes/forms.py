@@ -4,12 +4,7 @@ from .models import Estudiante
 
 
 class EstudianteForm(forms.ModelForm):
-    """
-    Formulario reutilizado tanto en CreateView como en UpdateView.
-
-    Al basarse en ModelForm no se duplica la definición de campos ni la
-    validación (por ejemplo, email único ya se valida a partir del modelo).
-    """
+    """Formulario reutilizado por CreateView y UpdateView."""
 
     class Meta:
         model = Estudiante

@@ -10,7 +10,6 @@
     </a>
 </div>
 
-{# V2: barra de búsqueda + filtro por curso + exportación #}
 <form method="get" class="row g-2 align-items-end mb-3">
     <div class="col-md-5">
         <label class="form-label" for="q">Buscar</label>
@@ -38,11 +37,10 @@
 </form>
 
 <div class="mb-3 d-flex gap-2">
-    {# Los reportes reutilizan los mismos filtros ?q= y ?curso_id= #}
     <a href="{% url 'reportes:pdf' %}?q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}"
-       class="btn btn-danger btn-sm">📄 Exportar PDF</a>
+       class="btn btn-outline-secondary btn-sm">Exportar PDF</a>
     <a href="{% url 'reportes:excel' %}?q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}"
-       class="btn btn-success btn-sm">📊 Exportar Excel</a>
+       class="btn btn-outline-secondary btn-sm">Exportar Excel</a>
 </div>
 
 {% include "estudiantes/partials/_tabla_estudiantes.html" with mostrar_acciones=True %}
