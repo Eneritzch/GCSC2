@@ -1,0 +1,15 @@
+# Normaliza los finales de linea para evitar diferencias entre Windows y Linux.
+* text=auto eol=lf
+
+# Archivos binarios: nunca modificar finales de linea.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.xlsx binary
+*.sqlite3 binary
+
+# Scripts de shell siempre con LF.
+*.sh text eol=lf
