@@ -1,0 +1,14 @@
+# Levanta la aplicacion en un contenedor para desarrollo o demostracion.
+# Uso: docker compose up --build
+services:
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=True
+      - SECRET_KEY=clave-solo-para-desarrollo
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    volumes:
+      - .:/app
