@@ -7,6 +7,11 @@ print("=== INICIANDO SCRIPT DE ARRANQUE (start.py) ===")
 import socket
 from urllib.parse import urlparse
 
+# Agregar el directorio raíz al PYTHONPATH para que encuentre 'config'
+import sys
+import os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 # 1. Ejecutar diagnóstico de base de datos
 print("=== DIAGNÓSTICO DE BASE DE DATOS ===")
 db_url = os.environ.get("DATABASE_URL", "")
@@ -31,16 +36,20 @@ else:
         import django
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
         django.setup()
+        
         from django.db import connections
         from django.db.utils import OperationalError
+        
         conn = connections['default']
         conn.ensure_connection()
         print("✅ Django pudo conectarse correctamente a la base de datos PostgreSQL.")
-    except OperationalError as oe:
-        print(f"❌ Django no pudo establecer conexión operacional: {oe}")
-        sys.exit(1)
     except Exception as e:
-        print(f"❌ Error inesperado cargando Django: {e}")
+        # Atrapamos cualquier error de inicialización o conexión
+        error_type = type(e).__name__
+        if error_type == 'OperationalError':
+            print(f"❌ Django no pudo establecer conexión operacional: {e}")
+        else:
+            print(f"❌ Error inesperado cargando Django o conectando a BD: {e}")
         sys.exit(1)
 
 # 2. Ejecutar collectstatic
