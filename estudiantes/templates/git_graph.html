@@ -1,0 +1,492 @@
+{% extends 'estudiantes/base.html' %}
+
+{% block title %}Historial de Cambios — Control de Estudiantes{% endblock %}
+
+{% block content %}
+<style>
+    /* ── Graph Page Layout ── */
+    .graph-page {
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 80px);
+        gap: 0;
+    }
+
+    .graph-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 16px 22px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: var(--radius) var(--radius) 0 0;
+        box-shadow: var(--shadow);
+        flex-shrink: 0;
+    }
+
+    .graph-toolbar-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .graph-toolbar-left h1 {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin: 0;
+        color: var(--text);
+    }
+
+    .graph-toolbar-left .subtitle {
+        color: var(--muted);
+        font-size: .82rem;
+        margin: 0;
+    }
+
+    .graph-toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .graph-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: .78rem;
+        font-weight: 600;
+        background: var(--accent-soft);
+        color: var(--accent);
+    }
+
+    .graph-badge .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--accent);
+    }
+
+    .legend-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: .78rem;
+        color: var(--muted);
+        font-weight: 500;
+    }
+
+    .legend-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    /* ── Graph Container ── */
+    .graph-container {
+        flex: 1;
+        background: #0c1222;
+        border: 1px solid var(--border);
+        border-top: none;
+        border-radius: 0 0 var(--radius) var(--radius);
+        position: relative;
+        overflow: hidden;
+    }
+
+    #git-graph {
+        width: 100%;
+        height: 100%;
+    }
+
+    /* ── Loading State ── */
+    .graph-loading {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 16px;
+        background: #0c1222;
+        z-index: 10;
+        transition: opacity .4s ease;
+    }
+
+    .graph-loading.hidden {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+    .spinner {
+        width: 36px;
+        height: 36px;
+        border: 3px solid rgba(79, 70, 229, 0.2);
+        border-top-color: #4f46e5;
+        border-radius: 50%;
+        animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .graph-loading span {
+        color: #94a3b8;
+        font-size: .88rem;
+        font-weight: 500;
+    }
+
+    /* ── Detail Panel ── */
+    .detail-panel {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        right: 20px;
+        background: rgba(15, 23, 42, 0.95);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(99, 102, 241, 0.25);
+        border-radius: 12px;
+        padding: 18px 22px;
+        color: #e2e8f0;
+        z-index: 20;
+        transform: translateY(120%);
+        transition: transform .35s cubic-bezier(.4,0,.2,1);
+        max-width: 600px;
+    }
+
+    .detail-panel.visible {
+        transform: translateY(0);
+    }
+
+    .detail-panel .detail-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .detail-panel .detail-hash {
+        font-family: 'Courier New', monospace;
+        font-size: .95rem;
+        font-weight: 700;
+        color: #818cf8;
+    }
+
+    .detail-panel .detail-close {
+        background: none;
+        border: none;
+        color: #64748b;
+        cursor: pointer;
+        padding: 4px;
+        font-size: 1.2rem;
+        line-height: 1;
+    }
+
+    .detail-panel .detail-close:hover {
+        color: #e2e8f0;
+    }
+
+    .detail-panel .detail-msg {
+        font-size: .92rem;
+        line-height: 1.5;
+        margin-bottom: 8px;
+    }
+
+    .detail-panel .detail-meta {
+        display: flex;
+        gap: 20px;
+        color: #64748b;
+        font-size: .8rem;
+    }
+
+    .detail-panel .detail-meta span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+    }
+
+    /* ── Error State ── */
+    .graph-error {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        background: #0c1222;
+        color: #ef4444;
+        z-index: 10;
+    }
+
+    .graph-error span {
+        color: #94a3b8;
+        font-size: .88rem;
+    }
+</style>
+
+<div class="graph-page">
+    <!-- Toolbar -->
+    <div class="graph-toolbar">
+        <div class="graph-toolbar-left">
+            <div>
+                <h1>Historial de Cambios</h1>
+                <p class="subtitle">Grafo interactivo de commits, ramas y merges</p>
+            </div>
+            <div style="margin-left: 20px; border-left: 1px solid var(--border); padding-left: 20px;">
+                <label for="authorFilter" style="font-size: 0.8rem; color: var(--muted); display: block; margin-bottom: 4px;">Filtrar por Integrante:</label>
+                <select id="authorFilter" style="background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 4px 8px; border-radius: 6px; font-family: Inter, sans-serif; font-size: 0.85rem; outline: none; min-width: 150px;">
+                    <option value="all">Todos los integrantes</option>
+                </select>
+            </div>
+        </div>
+        <div class="graph-toolbar-right">
+            <div class="legend-row">
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #4f46e5;"></div>
+                    main
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #f59e0b;"></div>
+                    v2-reportes
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #10b981;"></div>
+                    config-editor
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: #ef4444;"></div>
+                    v3-cursos
+                </div>
+                <div class="legend-item">
+                    <div class="legend-dot" style="background: transparent; border: 2px solid #64748b; width: 8px; height: 8px;"></div>
+                    Merge
+                </div>
+            </div>
+            <div class="graph-badge">
+                <span class="dot"></span>
+                Tiempo real
+            </div>
+        </div>
+    </div>
+
+    <!-- Graph Canvas -->
+    <div class="graph-container">
+        <div class="graph-loading" id="graphLoading">
+            <div class="spinner"></div>
+            <span>Cargando historial del repositorio...</span>
+        </div>
+
+        <div id="git-graph"></div>
+
+        <!-- Detail Panel (shown on click) -->
+        <div class="detail-panel" id="detailPanel">
+            <div class="detail-header">
+                <span class="detail-hash" id="detailHash"></span>
+                <button class="detail-close" id="detailClose">&times;</button>
+            </div>
+            <div class="detail-msg" id="detailMsg"></div>
+            <div class="detail-meta">
+                <span id="detailAuthor"></span>
+                <span id="detailDate"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Vis.js from CDN -->
+<script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
+<script>
+(function() {
+    const container = document.getElementById('git-graph');
+    const loading = document.getElementById('graphLoading');
+    const detailPanel = document.getElementById('detailPanel');
+    const detailHash = document.getElementById('detailHash');
+    const detailMsg = document.getElementById('detailMsg');
+    const detailAuthor = document.getElementById('detailAuthor');
+    const detailDate = document.getElementById('detailDate');
+    const detailClose = document.getElementById('detailClose');
+
+    // Fetch data from the API
+    fetch('/api/git-graph/')
+        .then(r => r.json())
+        .then(data => {
+            if (data.error) {
+                showError(data.error);
+                return;
+            }
+
+            // Populate author filter
+            const filterSelect = document.getElementById('authorFilter');
+            if (data.authors && data.authors.length > 0) {
+                data.authors.forEach(author => {
+                    const option = document.createElement('option');
+                    option.value = author;
+                    option.textContent = author;
+                    filterSelect.appendChild(option);
+                });
+            }
+
+            const nodes = new vis.DataSet(data.nodes);
+            const edges = new vis.DataSet(data.edges);
+
+            const options = {
+                layout: {
+                    hierarchical: {
+                        enabled: true,
+                        direction: 'DU',      // Down-to-Up (newest on top)
+                        sortMethod: 'directed',
+                        levelSeparation: 120,
+                        nodeSpacing: 250,
+                        treeSpacing: 280,
+                        blockShifting: true,
+                        edgeMinimization: true,
+                        parentCentralization: true,
+                    }
+                },
+                nodes: {
+                    font: {
+                        color: '#cbd5e1',
+                        size: 12,
+                        face: 'Inter, system-ui, sans-serif',
+                        multi: 'html',
+                    },
+                    borderWidth: 2,
+                    shadow: {
+                        enabled: true,
+                        color: 'rgba(0,0,0,0.3)',
+                        size: 6,
+                        x: 0,
+                        y: 2,
+                    },
+                },
+                edges: {
+                    smooth: {
+                        type: 'cubicBezier',
+                        forceDirection: 'vertical',
+                        roundness: 0.4,
+                    },
+                    width: 1.5,
+                    color: {
+                        color: '#334155',
+                        highlight: '#6366f1',
+                        hover: '#6366f1',
+                    },
+                    arrows: {
+                        to: { enabled: true, scaleFactor: 0.45 }
+                    },
+                },
+                interaction: {
+                    hover: true,
+                    tooltipDelay: 200,
+                    zoomView: true,
+                    zoomSpeed: 0.3,
+                    dragView: true,
+                    navigationButtons: false,
+                    keyboard: {
+                        enabled: true,
+                        speed: { x: 5, y: 5, zoom: 0.01 },
+                    },
+                    multiselect: false,
+                },
+                physics: {
+                    enabled: false,
+                },
+            };
+
+            const network = new vis.Network(container, { nodes, edges }, options);
+
+            // Hide loading
+            network.once('afterDrawing', function() {
+                loading.classList.add('hidden');
+            });
+
+            // Author filter logic
+            filterSelect.addEventListener('change', function(e) {
+                const selectedAuthor = e.target.value;
+                const updates = [];
+                
+                nodes.forEach(node => {
+                    if (selectedAuthor === 'all' || node._author === selectedAuthor) {
+                        // Restore original color
+                        updates.push({
+                            id: node.id,
+                            color: {
+                                background: node._original_color,
+                                border: node._original_color,
+                                highlight: { background: '#ffffff', border: node._original_color },
+                                hover: { background: '#ffffff', border: node._original_color },
+                            },
+                            font: { color: '#e2e8f0' }
+                        });
+                    } else {
+                        // Dim node
+                        updates.push({
+                            id: node.id,
+                            color: {
+                                background: 'rgba(51, 65, 85, 0.4)',
+                                border: 'rgba(71, 85, 105, 0.4)',
+                                highlight: { background: 'rgba(51, 65, 85, 0.6)', border: 'rgba(71, 85, 105, 0.6)' },
+                                hover: { background: 'rgba(51, 65, 85, 0.6)', border: 'rgba(71, 85, 105, 0.6)' },
+                            },
+                            font: { color: 'rgba(148, 163, 184, 0.3)' }
+                        });
+                    }
+                });
+                nodes.update(updates);
+            });
+
+            // Click on node -> show detail panel
+            network.on('click', function(params) {
+                if (params.nodes.length > 0) {
+                    const nodeId = params.nodes[0];
+                    const node = nodes.get(nodeId);
+                    if (node) {
+                        detailHash.textContent = node._hash || nodeId.substring(0, 7);
+                        detailAuthor.textContent = node._author || '';
+                        detailDate.textContent = node._date || '';
+                        detailMsg.textContent = node._message || node.label;
+
+                        detailPanel.classList.add('visible');
+                    }
+                } else {
+                    detailPanel.classList.remove('visible');
+                }
+            });
+
+            // Close detail panel
+            detailClose.addEventListener('click', function() {
+                detailPanel.classList.remove('visible');
+            });
+
+            // Fit the view after stabilization
+            setTimeout(() => {
+                network.fit({ animation: { duration: 600, easingFunction: 'easeInOutQuad' } });
+            }, 300);
+        })
+        .catch(err => {
+            showError(err.message);
+        });
+
+    function showError(msg) {
+        loading.innerHTML = `
+            <div class="graph-error">
+                <svg width="40" height="40" fill="none" stroke="#ef4444" stroke-width="1.5" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 8v4m0 4h.01"/>
+                </svg>
+                <span>${msg}</span>
+            </div>
+        `;
+    }
+})();
+</script>
+{% endblock %}
