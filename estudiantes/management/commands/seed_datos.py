@@ -101,4 +101,3 @@ class Command(BaseCommand):
                 f"({creados} nuevos)."
             )
         )
-

@@ -33,18 +33,54 @@
     </div>
 </div>
 
-<div class="card2">
+<div class="card2 card2-pad">
+    <form method="get" class="toolbar">
+        <div class="field grow">
+            <label for="q">Buscar</label>
+            <input type="text" name="q" id="q" value="{{ q }}" class="input"
+                   placeholder="Nombre, apellido o email...">
+        </div>
+        <div class="field" style="min-width:200px">
+            <label for="curso_id">Curso</label>
+            <select name="curso_id" id="curso_id" class="select">
+                <option value="">Todos los cursos</option>
+                {% for curso in cursos %}
+                    <option value="{{ curso.pk }}"
+                        {% if curso.pk|stringformat:"s" == curso_id %}selected{% endif %}>
+                        {{ curso.nombre }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn2 btn2-primary">Filtrar</button>
+        <a href="{% url 'estudiantes:lista' %}" class="btn2 btn2-ghost">Limpiar</a>
+        <div class="toolbar-actions">
+            <a href="{% url 'reportes:pdf' %}?q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}"
+               class="btn2 btn2-ghost btn2-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                PDF
+            </a>
+            <a href="{% url 'reportes:excel' %}?q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}"
+               class="btn2 btn2-ghost btn2-sm">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Excel
+            </a>
+        </div>
+    </form>
+</div>
+
+<div class="card2" style="margin-top:20px">
     {% include "estudiantes/partials/_tabla_estudiantes.html" with mostrar_acciones=True %}
 </div>
 
 {% if is_paginated %}
     <div class="pager">
         {% if page_obj.has_previous %}
-            <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+            <a href="?page={{ page_obj.previous_page_number }}&q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}">Anterior</a>
         {% endif %}
         <span class="current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
         {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+            <a href="?page={{ page_obj.next_page_number }}&q={{ q|urlencode }}&curso_id={{ curso_id|urlencode }}">Siguiente</a>
         {% endif %}
     </div>
 {% endif %}
