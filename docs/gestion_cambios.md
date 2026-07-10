@@ -16,20 +16,20 @@ Grupo de 4 integrantes. Los temas de la exposición individual se distribuyen as
 
 | # | Integrante | Usuario GitHub | Tema de exposición |
 |---|---|---|---|
-| 1 | [Nombre integrante 1] | [usuario1] | Gestión del cambio |
-| 2 | [Nombre integrante 2] | [usuario2] | Gestión de versiones (Git/GitHub) |
-| 3 | [Nombre integrante 3] | [usuario3] | Integración continua y Despliegue continuo |
-| 4 | [Nombre integrante 4] | [usuario4] | Reutilización y variabilidad |
+| 1 | [Jaione Cherres] | [Eneritzch] | Gestión del cambio |
+| 2 | [Dulce Villacis] | [DullVillacis] | Gestión de versiones (Git/GitHub) |
+| 3 | [Ronny Arellano] | [RonnyAreMC] | Integración continua y Despliegue continuo |
+| 4 | [Elias Ramos] | [eliasDniel] | Reutilización y variabilidad |
 
 ## Tabla de control de cambios
 
 | # | Cambio solicitado | Motivo | Responsable | Fecha solicitud | Fecha aprobación | Estado | Versión afectada |
 |---|---|---|---|---|---|---|---|
-| 1 | Agregar búsqueda de estudiantes por nombre/apellido/email | El cliente necesitaba encontrar estudiantes rápidamente en listas grandes | [Nombre integrante 2] | 2026-06-15 | 2026-06-16 | Implementado | V1 → V2 |
-| 2 | Agregar exportación a PDF y Excel | Coordinación académica necesita reportes físicos para archivo institucional | [Nombre integrante 4] | 2026-06-18 | 2026-06-19 | Implementado | V2 |
-| 3 | Agregar filtro por curso | Facilitar la gestión cuando hay múltiples cursos simultáneos | [Nombre integrante 1] | 2026-06-20 | 2026-06-21 | Implementado | V2 |
+| 1 | Agregar búsqueda de estudiantes por nombre/apellido/email | El cliente necesitaba encontrar estudiantes rápidamente en listas grandes | [Dulce Villacis] | 2026-06-15 | 2026-06-16 | Implementado | V1 → V2 |
+| 2 | Agregar exportación a PDF y Excel | Coordinación académica necesita reportes físicos para archivo institucional | [Elias Ramos] | 2026-06-18 | 2026-06-19 | Implementado | V2 |
+| 3 | Agregar filtro por curso | Facilitar la gestión cuando hay múltiples cursos simultáneos | [Jaione Cherres] | 2026-06-20 | 2026-06-21 | Implementado | V2 |
 
-> Aprobación de los cambios a cargo de [Nombre integrante 3] (responsable de
+> Aprobación de los cambios a cargo de [Ronny Arellano] (responsable de
 > versiones e integración).
 
 ## Detalle de implementación
