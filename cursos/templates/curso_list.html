@@ -1,0 +1,71 @@
+{% extends "estudiantes/base.html" %}
+{% block nav_lista %}{% endblock %}
+{% block nav_cursos %}active{% endblock %}
+
+{% block title %}Cursos{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>Cursos</h1>
+        {% if is_paginated %}
+            <p>{{ page_obj.paginator.count }} curso(s) registrado(s)</p>
+        {% else %}
+            <p>{{ cursos|length }} curso(s) registrado(s)</p>
+        {% endif %}
+    </div>
+    <a href="{% url 'cursos:crear' %}" class="btn2 btn2-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo curso
+    </a>
+</div>
+
+<div class="card2 card2-pad">
+    <div class="table-wrap">
+        <table class="table2">
+            <thead>
+                <tr>
+                    <th>Nombre</th>
+                    <th>Código</th>
+                    <th class="th-right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for curso in cursos %}
+                    <tr>
+                        <td class="cell-name">{{ curso.nombre }}</td>
+                        <td class="cell-muted">{{ curso.codigo }}</td>
+                        <td class="td-right">
+                            <div class="row-actions">
+                                <a href="{% url 'cursos:editar' curso.pk %}" class="icon-btn" title="Editar">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4h6a2 2 0 0 1 2 2v6"/><path d="M21 15v4a2 2 0 0 1-2 2H7l-4-4V6a2 2 0 0 1 2-2h4"/><path d="M7 17l10-10"/></svg>
+                                </a>
+                                <a href="{% url 'cursos:eliminar' curso.pk %}" class="icon-btn danger" title="Eliminar">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="3" class="empty">No hay cursos registrados.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if is_paginated %}
+    <div class="pager">
+        {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}">Anterior</a>
+        {% endif %}
+        <span class="current">Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}">Siguiente</a>
+        {% endif %}
+    </div>
+{% endif %}
+
+{% endblock %}

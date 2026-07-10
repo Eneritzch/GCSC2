@@ -4,7 +4,8 @@ gunicorn==23.0.0
 whitenoise==6.8.2
 python-decouple==3.8
 dj-database-url==2.3.0
-psycopg2-binary==2.9.10
 # V2: exportación de reportes
 reportlab==4.2.5
 openpyxl==3.1.5
+# V3: Actualice a psycopg2-binary a la versión 2.9.11 para compatibilidad con PostgreSQL
+psycopg2-binary==2.9.11
