@@ -10,6 +10,16 @@ def git_history_view(request):
     return render(request, 'git_graph.html')
 
 
+def documentacion_view(request):
+    """Vista para mostrar la documentación del proyecto embebida."""
+    return render(request, 'documentacion.html')
+
+
+def qr_view(request):
+    """Vista para mostrar el código QR de acceso al sistema en producción."""
+    return render(request, 'qr.html')
+
+
 def git_history_api(request):
     """API que devuelve los datos del grafo de Git en formato JSON para Vis.js."""
     try:
@@ -21,7 +31,29 @@ def git_history_api(request):
         ]
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         lines = result.stdout.strip().split('\n')
+        
+    except subprocess.CalledProcessError:
+        # Si falla (ej. en producción de Railway donde no hay carpeta .git), 
+        # devolvemos un nodo de aviso en lugar de un error.
+        return JsonResponse({
+            'nodes': [{
+                'id': 'error',
+                'label': 'Historial de Git\nno disponible en producción',
+                'title': 'La carpeta .git no se exporta al entorno de Railway por defecto.',
+                'color': {'background': '#ef4444', 'border': '#b91c1c'},
+                'shape': 'box',
+                'font': {'color': '#ffffff', 'size': 14, 'face': 'Inter'},
+                '_author': 'Sistema',
+                '_hash': 'N/A',
+                '_date': 'Ahora',
+                '_message': 'No se encontró repositorio Git activo.',
+                '_original_color': '#ef4444'
+            }],
+            'edges': [],
+            'authors': ['Sistema']
+        })
 
+    try:
         nodes = []
         edges = []
         seen_edges = set()
@@ -81,7 +113,7 @@ def git_history_api(request):
                 if clean_refs:
                     label_parts.append(f"<b>[{clean_refs}]</b>")
             
-            label_parts.append(f"<b>{author}</b>  <i style='color:#94a3b8'>({short_hash})</i>")
+            label_parts.append(f"<b>{author}</b>  <i>({short_hash})</i>")
             
             # Agregar mensaje truncado
             short_msg = message[:40] + ('...' if len(message) > 40 else '')

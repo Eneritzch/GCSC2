@@ -1,0 +1,144 @@
+{% extends 'estudiantes/base.html' %}
+{% load static %}
+
+{% block title %}Documentación del Proyecto{% endblock %}
+
+{% block nav_docs %}active{% endblock %}
+{% block nav_lista %}{% endblock %}
+
+{% block content %}
+<style>
+    /* Override content container for full-screen docs */
+    .content {
+        padding: 0 !important;
+        max-width: 100% !important;
+        display: flex;
+        flex-direction: column;
+    }
+    .app-foot { display: none; }
+
+    .docs-wrapper {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        height: calc(100vh - 20px);
+    }
+
+    .docs-header {
+        padding: 14px 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #0f172a;
+        border-bottom: 1px solid #1e293b;
+        flex-shrink: 0;
+    }
+
+    .docs-header h2 {
+        margin: 0;
+        font-size: 1.15rem;
+        color: #f8fafc;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .docs-header h2 svg {
+        width: 20px;
+        height: 20px;
+        stroke: #818cf8;
+    }
+
+    .docs-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .docs-btn {
+        padding: 7px 14px;
+        color: #e2e8f0;
+        text-decoration: none;
+        border-radius: 8px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        transition: all 0.2s;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        border: 1px solid #334155;
+        background: transparent;
+    }
+
+    .docs-btn:hover {
+        background: #1e293b;
+        border-color: #475569;
+    }
+
+    .docs-btn.primary {
+        background: #4f46e5;
+        border-color: #4f46e5;
+        color: white;
+    }
+
+    .docs-btn.primary:hover {
+        background: #4338ca;
+    }
+
+    .docs-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .docs-body {
+        flex: 1;
+        position: relative;
+        background: #1e293b;
+    }
+
+    .docs-iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+    }
+
+    @media (max-width: 700px) {
+        .docs-wrapper { height: auto; }
+        .docs-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px 16px;
+        }
+        .docs-actions { width: 100%; }
+        .docs-btn { flex: 1; justify-content: center; }
+        .docs-body { min-height: 70vh; }
+    }
+</style>
+
+<div class="docs-wrapper">
+    <div class="docs-header">
+        <h2>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+            S15 — Componente Práctico
+        </h2>
+        <div class="docs-actions">
+            <a class="docs-btn" href="{% static 'docs/documentacion.pdf' %}" download>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Descargar
+            </a>
+            <a class="docs-btn primary" href="{% static 'docs/documentacion.pdf' %}" target="_blank">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Abrir en nueva pestaña
+            </a>
+        </div>
+    </div>
+    <div class="docs-body">
+        <iframe class="docs-iframe" src="{% static 'docs/documentacion.pdf' %}"></iframe>
+    </div>
+</div>
+{% endblock %}

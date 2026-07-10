@@ -1,0 +1,313 @@
+{% extends 'estudiantes/base.html' %}
+
+{% block title %}Código QR — Acceso al Sistema{% endblock %}
+
+{% block nav_qr %}active{% endblock %}
+{% block nav_lista %}{% endblock %}
+
+{% block content %}
+<style>
+    .qr-page {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: calc(100vh - 200px);
+        gap: 32px;
+    }
+
+    .qr-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 48px;
+        text-align: center;
+        box-shadow:
+            0 0 0 1px rgba(0, 0, 0, 0.03),
+            0 4px 6px -1px rgba(0, 0, 0, 0.07),
+            0 20px 40px -8px rgba(79, 70, 229, 0.12);
+        max-width: 440px;
+        width: 100%;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .qr-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, #4f46e5, #818cf8, #6366f1);
+    }
+
+    .qr-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: #eef2ff;
+        color: #4f46e5;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 16px;
+    }
+
+    .qr-badge svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .qr-card h2 {
+        margin: 0 0 6px;
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #0f172a;
+    }
+
+    .qr-card .subtitle {
+        margin: 0 0 28px;
+        color: #64748b;
+        font-size: 0.9rem;
+    }
+
+    .qr-container {
+        display: inline-flex;
+        padding: 16px;
+        background: white;
+        border-radius: 16px;
+        border: 2px solid #e5e7eb;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        margin-bottom: 24px;
+    }
+
+    #qrcode {
+        width: 220px;
+        height: 220px;
+    }
+
+    #qrcode canvas {
+        width: 220px !important;
+        height: 220px !important;
+        border-radius: 8px;
+    }
+
+    .qr-url {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .qr-url code {
+        font-size: 0.82rem;
+        color: #334155;
+        font-family: 'SF Mono', 'Fira Code', monospace;
+        flex: 1;
+        text-align: left;
+        word-break: break-all;
+    }
+
+    .qr-url .copy-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 4px;
+        color: #94a3b8;
+        transition: color 0.2s;
+        flex-shrink: 0;
+    }
+
+    .qr-url .copy-btn:hover {
+        color: #4f46e5;
+    }
+
+    .qr-url .copy-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .qr-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+    }
+
+    .qr-actions a {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 0.88rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .qr-actions a svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .qr-actions .btn-primary {
+        background: #4f46e5;
+        color: white;
+    }
+
+    .qr-actions .btn-primary:hover {
+        background: #4338ca;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+    }
+
+    .qr-actions .btn-outline {
+        background: white;
+        color: #334155;
+        border: 1px solid #e2e8f0;
+    }
+
+    .qr-actions .btn-outline:hover {
+        border-color: #c7d2fe;
+        color: #4f46e5;
+        background: #eef2ff;
+    }
+
+    .qr-info {
+        margin-top: 24px;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .qr-info-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.82rem;
+        color: #64748b;
+    }
+
+    .qr-info-item svg {
+        width: 16px;
+        height: 16px;
+        color: #94a3b8;
+    }
+
+    .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(100px);
+        background: #0f172a;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        z-index: 999;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+
+    .toast.show {
+        transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 600px) {
+        .qr-page { min-height: 0; gap: 20px; }
+        .qr-card { padding: 28px 18px; }
+        .qr-container { max-width: 100%; padding: 12px; }
+        #qrcode { max-width: 100%; }
+        #qrcode canvas { max-width: 100% !important; height: auto !important; }
+        .qr-actions { flex-direction: column; }
+        .qr-actions a { justify-content: center; }
+        .qr-info { flex-direction: column; align-items: center; gap: 10px; }
+    }
+</style>
+
+<div class="qr-page">
+    <div class="qr-card">
+        <div class="qr-badge">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            En producción
+        </div>
+        <h2>Acceso al Sistema</h2>
+        <p class="subtitle">Escanea el código QR para abrir la aplicación desplegada</p>
+
+        <div class="qr-container">
+            <div id="qrcode"></div>
+        </div>
+
+        <div class="qr-url">
+            <code id="urlText">https://gestioncp2.up.railway.app</code>
+            <button class="copy-btn" onclick="copyUrl()" title="Copiar URL">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            </button>
+        </div>
+
+        <div class="qr-actions">
+            <a href="https://gestioncp2.up.railway.app" target="_blank" class="btn-primary">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                Ir al sitio
+            </a>
+            <a href="javascript:void(0)" onclick="downloadQR()" class="btn-outline">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Descargar QR
+            </a>
+        </div>
+    </div>
+
+    <div class="qr-info">
+        <div class="qr-info-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+            Compatible con cualquier lector QR
+        </div>
+        <div class="qr-info-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Conexión segura HTTPS
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">URL copiada al portapapeles</div>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<script>
+    // Generate QR
+    new QRCode(document.getElementById('qrcode'), {
+        text: 'https://gestioncp2.up.railway.app',
+        width: 220,
+        height: 220,
+        colorDark: '#0f172a',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.H
+    });
+
+    function copyUrl() {
+        navigator.clipboard.writeText('https://gestioncp2.up.railway.app').then(() => {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        });
+    }
+
+    function downloadQR() {
+        const canvas = document.querySelector('#qrcode canvas');
+        if (canvas) {
+            const link = document.createElement('a');
+            link.download = 'qr-gestioncp2.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+    }
+</script>
+{% endblock %}

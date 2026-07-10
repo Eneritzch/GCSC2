@@ -185,6 +185,8 @@
         transform: translateY(120%);
         transition: transform .35s cubic-bezier(.4,0,.2,1);
         max-width: 600px;
+        max-height: 250px;
+        overflow-y: auto;
     }
 
     .detail-panel.visible {
@@ -420,6 +422,8 @@
                         size: 12,
                         face: 'Inter, system-ui, sans-serif',
                         multi: 'html',
+                        bold: { color: '#ffffff' },
+                        ital: { color: '#94a3b8' }
                     },
                     borderWidth: 2,
                     shadow: {
@@ -469,6 +473,14 @@
             // Hide loading
             network.once('afterDrawing', function() {
                 loading.classList.add('hidden');
+            });
+
+            // Pointer cursor on hover
+            network.on('hoverNode', function() {
+                container.style.cursor = 'pointer';
+            });
+            network.on('blurNode', function() {
+                container.style.cursor = 'default';
             });
 
             // Author filter logic
