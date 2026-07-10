@@ -1,0 +1,27 @@
+{% extends "estudiantes/base.html" %}
+{% block nav_lista %}{% endblock %}
+{% block nav_cursos %}active{% endblock %}
+
+{% block title %}Eliminar Curso{% endblock %}
+
+{% block content %}
+<div class="page-head">
+    <div>
+        <h1>Eliminar curso</h1>
+        <p>¿Seguro que deseas eliminar el curso "{{ object }}"?</p>
+    </div>
+    <a href="{% url 'cursos:lista' %}" class="btn2 btn2-ghost">Volver</a>
+</div>
+
+<div class="card2 card2-pad">
+    <form method="post">
+        {% csrf_token %}
+        <p class="alert2">Esta acción no se puede deshacer.</p>
+        <div class="form-actions">
+            <button type="submit" class="btn2 btn2-danger">Eliminar</button>
+            <a href="{% url 'cursos:lista' %}" class="btn2 btn2-ghost">Cancelar</a>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
