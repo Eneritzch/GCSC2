@@ -13,7 +13,12 @@ SECRET_KEY = config(
 DEBUG = config("DEBUG", default=True, cast=bool)
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
-    default="localhost,127.0.0.1,.onrender.com",
+    default="localhost,127.0.0.1,.onrender.com,.railway.app,.up.railway.app",
+    cast=Csv(),
+)
+CSRF_TRUSTED_ORIGINS = config(
+    "CSRF_TRUSTED_ORIGINS",
+    default="https://*.railway.app,https://*.up.railway.app",
     cast=Csv(),
 )
 
