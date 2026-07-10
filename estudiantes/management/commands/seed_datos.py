@@ -1,9 +1,12 @@
-"""Puebla la base con cursos y estudiantes de ejemplo. Uso: manage.py seed_datos."""
+"""Puebla la base con cursos, estudiantes y superusuario. Uso: manage.py seed_datos."""
 
+from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 
 from cursos.models import Curso
 from estudiantes.models import Estudiante
+
+User = get_user_model()
 
 CURSOS = [
     ("Matemáticas", "MAT-101"),
@@ -32,9 +35,14 @@ ESTUDIANTES = [
     ("Nicolás", "Herrera", "nicolas.herrera@example.com", "PRO-102", True),
 ]
 
+# Credenciales del superusuario por defecto.
+ADMIN_USERNAME = "admin"
+ADMIN_EMAIL = "admin@gcsc.com"
+ADMIN_PASSWORD = "admin1234"
+
 
 class Command(BaseCommand):
-    help = "Crea cursos y estudiantes de ejemplo (idempotente)."
+    help = "Crea superusuario, cursos y estudiantes de ejemplo (idempotente)."
 
     def add_arguments(self, parser):
         parser.add_argument(
@@ -49,6 +57,22 @@ class Command(BaseCommand):
             Curso.objects.all().delete()
             self.stdout.write("Datos previos eliminados.")
 
+        # --- Superusuario ---
+        if User.objects.filter(username=ADMIN_USERNAME).exists():
+            self.stdout.write(f"Superusuario '{ADMIN_USERNAME}' ya existe.")
+        else:
+            User.objects.create_superuser(
+                username=ADMIN_USERNAME,
+                email=ADMIN_EMAIL,
+                password=ADMIN_PASSWORD,
+            )
+            self.stdout.write(
+                self.style.SUCCESS(
+                    f"Superusuario creado: {ADMIN_USERNAME} / {ADMIN_PASSWORD}"
+                )
+            )
+
+        # --- Cursos ---
         cursos = {}
         for nombre, codigo in CURSOS:
             curso, _ = Curso.objects.get_or_create(
@@ -56,6 +80,7 @@ class Command(BaseCommand):
             )
             cursos[codigo] = curso
 
+        # --- Estudiantes ---
         creados = 0
         for nombre, apellido, email, codigo, activo in ESTUDIANTES:
             _, creado = Estudiante.objects.get_or_create(
@@ -76,3 +101,4 @@ class Command(BaseCommand):
                 f"({creados} nuevos)."
             )
         )
+
